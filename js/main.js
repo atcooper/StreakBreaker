@@ -1,4 +1,4 @@
-// Singleton, master list of players and their relevant data.
+// Singleton, master list of players and their relevant data. For now, they remain in the order they are added.
 var playersArray = [];
 
 // Player object. Assumed single game simplifies this structure, and no need to specify bid on creation.
@@ -6,20 +6,22 @@ function Player(n, w) {
     this.name = n;
     this.wallet = w;
     this.bid = 0;
-}
+    }
 
 // Populating with test data.
 playersArray.push(new Player('Player 1', 60));
-playersArray.push(new Player('Player 2', 75));
-playersArray.push(new Player('Player 3', 40));
+playersArray.push(new Player('Player 2', 25));
+playersArray.push(new Player('Player 3', 70));
 playersArray[0].bid = 40;
 playersArray[1].bid = 25;
-playersArray[2].bid = 10;
-playersArray.forEach(function(x) {
-    console.log(x.name, x.wallet, x.bid);
-});
+playersArray[2].bid = 30;
+// playersArray.forEach(function(x) {
+//     console.log(x.name, x.wallet, x.bid);
+// });
 
 function addPlayer(form) {
+    // Needs to check if player by the same name already exists.
+
     // Form variables, name and total amount of cash
     var playerName;
     var walletAmount;
@@ -83,32 +85,80 @@ function addPlayer(form) {
     outerNode.appendChild(nodeWallet);
     outerNode.appendChild(bidButton);
     cp.appendChild(outerNode);
-}
+    }
 
 function placeBid(playerControl) {
+    // Grab the needed webpage elements
     var nameElement = playerControl.firstElementChild;
     var walletAmountElement = nameElement.nextElementSibling.firstElementChild.nextElementSibling;
 
+    // for (var i = 0; i < playersArray.length; i ++) {
+    //     var compare = (playersArray[i].name == nameElement.textContent);
+    //     console.log('Compare', playersArray[i], nameElement.textContent, compare);
+    // }
+
+    // Get the player from the main data structure.
+    var player = playersArray.find(function(o) {
+        return o.name == nameElement.textContent;
+        });
+    console.log(player);
+
+    // Calculate amount
     var w = parseInt(walletAmountElement.textContent, 10);
     var newWalletAmount = w - 1;
 
+    // Update the web element and player data structure wallets
     walletAmountElement.textContent = newWalletAmount;
+    player.wallet = newWalletAmount;
 
 // If the player is not in the queue, create the new entry in the queue.
-
     var q = document.getElementById('queue');
-    outerNode = document.createElement('div');
-    outerNode.className = "player_row";
+    if (player.bid == 0) {
+//        var q = document.getElementById('queue');
+        outerNode = document.createElement('div');
+        outerNode.className = "player_row";
 
-    nodeName = document.createElement('div');
-    nodeName.textContent = nameElement.textContent;
+        nodeName = document.createElement('div');
+        nodeName.textContent = nameElement.textContent;
 
-    nodeBid = document.createElement('div');
-    nodeBid.textContent = 1;
+        nodeBid = document.createElement('div');
+        nodeBid.textContent = 1;
 
-    outerNode.appendChild(nodeName);
-    outerNode.appendChild(nodeBid);
+        outerNode.appendChild(nodeName);
+        outerNode.appendChild(nodeBid);
 
-    q.appendChild(outerNode);
+        q.appendChild(outerNode);
 
- }
+        player.bid = 1;
+        }
+    else {
+        player.bid = player.bid + 1;
+//        console.log(q);
+        var qPlayer = q.firstElementChild;
+        for (var i = 0; i < q.childElementCount - 1; i++) {
+            qPlayer = qPlayer.nextElementSibling;
+//            console.log(qPlayer);
+            if (qPlayer.firstElementChild.textContent == nameElement.textContent){
+                qPlayer.firstElementChild.nextElementSibling.textContent = player.bid;
+                var playerToSort = qPlayer;
+                }
+            }
+        }
+    // Finally, sort queue. Assume the top player is not bidding.
+    var previousPlayer = playerToSort.previousElementSibling;
+    var sortingQueue = [];
+    console.log(playerToSort);
+    console.log(previousPlayer);
+
+    if (previousPlayer.firstElementChild.nextElementSibling.textContent < playerToSort.firstElementChild.nextElementSibling.textContent) {
+        console.log("Exceeded bid. Time to move up the queue.");
+        sortingQueue.push(previousPlayer);
+        while (playerToSort.nextElementSibling != null) {
+            sortingQueue.push(playerToSort.nextElementSibling);
+            q.removeChild(playerToSort.nextElementSibling);
+            }
+        for (var i = 0; i < sortingQueue.length; i++) {
+            q.appendChild(sortingQueue[i]);
+            }
+        }
+    }
