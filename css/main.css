@@ -1,11 +1,40 @@
+.game_cp_and_queue {
+    display: flex;
+    align-items: center;
+    }
+.game_control_panel {
+    border: 1px dashed;
+    flex: 1;
+    padding: 10px;
+    margin-right: 10px;
+    }
+.bounty_control {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    }
+.bounty_control > div {
+    align-self: center;
+    justify-self: center;
+    }
+.versus_control {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    height: 100px;
+    padding: 20px;
+    }
+.declare_winner_button {
+    margin-top: 20px;
+    background-color:lightskyblue;
+    }
 .queue {
     border: 2px solid;
+    flex: 4;
     }
-
 .queue div {
     height: 25px;
     }
-
 .new_player_form {
     display: flex;
     flex-flow: column;
@@ -15,39 +44,33 @@
     width: 300px;
     border: 1px dashed;
     }
-
 .new_player_form_row {
     max-width: 300px;
     display: grid;
     grid-template-columns: 1fr 3fr;
     }
-
 .chart_labels, .player_row {
     display:grid;
     grid-template-columns: 2fr 1fr;
     border-bottom: 1px dashed;
     }
-
 .queue > div:first-child {
     background-color: f2f0d8;
     }
-
 .queue > div:last-child {
     border-bottom: none;
     }
-
 .player_row > div:nth-child(2) {
     background-color: #ffb2aa;
     }
-
 .bid {
     width: 10em;
     }
-
 div.control_panel {
-    
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-auto-rows: 150px;
     }
-
 div.player_control {
     display: flex;
     margin: 10px;
@@ -58,32 +81,29 @@ div.player_control {
     /*  justify-content: space-around; */
     flex-flow: column;
     }
-
 .player_name {
     margin: 10px;
     }
-
 .control_panel_wallet {
     display: grid;
     grid-template-columns: 1fr 1fr;
-
     width: 100px;
     margin: 10px;
     }
-
 .bid_action {
     text-align: center;
     width: 5em;
     background-color: red;
     }
-
 .bid_input_button {
     text-align: center;
     width: 10em;
-    background-color: gray;
+    background-color: lightgray;
     margin: 0 0 20px 0;
     }
-
 .add_player_button {
     margin-top: 20px;
+    }
+.error {
+    color: red;
     }

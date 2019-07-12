@@ -6,51 +6,68 @@
     <script src="js/main.js"></script>
   </head>
   <body>
+    <div class="game_cp_and_queue">
+      <div class="game_control_panel">
+        <div class="bounty_control">
+          <div>Bounty:</div><div id="bounty_amount_element">100</div>
+        </div>
+        <form id="declare_winner_form">
+          <div class="versus_control">
+            <label><input type="radio" name="versus" value="Player 1">Player 1</label>
+            <div>vs</div>
+            <label><input type="radio" name="versus" value="Player 3">Player 3</label>
+            <input class="declare_winner_button" type="button" form="declare_winner_form" value="Declare Winner" onclick="declareWinner(this.form);">
+          </div>
+        </form>
+        <div class="error" id="winner_error"></div>
 
-    <div class="queue" id="queue">
-      <div class="chart_labels">
-        <div>Player</div>
-        <div>Bid</div>
       </div>
-      <div class="player_row">
-        <div>Player 1</div>
-        <div>40</div>
-      </div>
-      <div class="player_row">
-        <div>Player 3</div>
-        <div>30</div>
-      </div>
-      <div class="player_row">
-        <div>Player 2</div>
-        <div>25</div>
+
+      <div class="queue" id="queue">
+        <div class="chart_labels">
+          <div>Player</div>
+          <div>Bid</div>
+        </div>
+        <div class="player_row" id="player_1_queue">
+          <div>Player 1</div>
+          <div>40</div>
+        </div>
+        <div class="player_row" id="player_3_queue">
+          <div>Player 3</div>
+          <div>30</div>
+        </div>
+        <div class="player_row" id="player_2_queue">
+          <div>Player 2</div>
+          <div>25</div>
+        </div>
       </div>
     </div>
 
     <br/>
     <div class="control_panel" id="control_panel">
-      <div class="player_control">
+      <div class="player_control" id="Player_1_control_panel">
         <div class="player_name">Player 1</div>
         <div class="control_panel_wallet">
           <div>Wallet:</div>
           <div>60</div>
         </div>
-        <input class="bid_input_button" type="button" onclick="placeBid(this.parentElement)" value="Bid">
+        <input class="bid_input_button" type="button" onclick="placeBid(this.parentElement);" value="Bid">
       </div>
-      <div class="player_control">
+      <div class="player_control" id="Player_2_control_panel">
         <div class="player_name">Player 2</div>
         <div class="control_panel_wallet">
           <div>Wallet:</div>
           <div>25</div>
         </div>
-        <input class="bid_input_button" type="button" onclick="placeBid(this.parentElement)" value="Bid">
+        <input class="bid_input_button" type="button" onclick="placeBid(this.parentElement);" value="Bid">
       </div>
-      <div class="player_control">
+      <div class="player_control" id="Player_3_control_panel">
         <div class="player_name">Player 3</div>
         <div class="control_panel_wallet">
           <div>Wallet:</div>
           <div>70</div>
         </div>
-        <input class="bid_input_button" type="button" onclick="placeBid(this.parentElement)" value="Bid">
+        <input class="bid_input_button" type="button" onclick="placeBid(this.parentElement);" value="Bid">
       </div>
     </div>
 
@@ -62,10 +79,10 @@
           <input type="text" id="player_name">
         </div>
         <div class="new_player_form_row">
-          <label for="">Wallet:</label>
+          <label for="player_wallet">Wallet:</label>
           <input type="text" id="player_wallet">
         </div>
-        <input class="add_player_button" type="button" form="add_player_form" value="Add Player" onclick="addPlayer(this.form)">
+        <input class="add_player_button" type="button" form="add_player_form" value="Add Player" onclick="addPlayer(this.form);">
       </form>
     </div>
 
