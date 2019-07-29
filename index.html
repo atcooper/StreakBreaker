@@ -13,9 +13,9 @@
         </div>
         <form id="declare_winner_form">
           <div class="versus_control">
-            <label><input type="radio" name="versus" value="Player 1">Player 1</label>
+            <span><input id="champ_radio_input" type="radio" name="versus" value="Player 1"><label>Player 1</label></span>
             <div>vs</div>
-            <label><input type="radio" name="versus" value="Player 3">Player 3</label>
+            <span><input id="challenger_radio_input" type="radio" name="versus" value="Player 3"><label>Player 3</label></span>
             <input class="declare_winner_button" type="button" form="declare_winner_form" value="Declare Winner" onclick="declareWinner(this.form);">
           </div>
         </form>
