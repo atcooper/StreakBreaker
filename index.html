@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/main.css">
+    <!-- Note window.onload is defined in main.js and cannot be defined elsewhere in this way-->
     <script src="js/main.js"></script>
   </head>
   <body>
@@ -28,7 +29,7 @@
           <div>Player</div>
           <div>Bid</div>
         </div>
-        <div class="player_row" id="player_1_queue">
+        <!--div class="player_row" id="player_1_queue">
           <div>Player 1</div>
           <div>3</div>
         </div>
@@ -39,36 +40,22 @@
         <div class="player_row" id="player_2_queue">
           <div>Player 2</div>
           <div>1</div>
-        </div>
+        </div -->
       </div>
     </div>
 
     <br/>
-    <div class="control_panel" id="control_panel">
-      <div class="player_control" id="Player_1_control_panel">
-        <div class="player_name">Player 1</div>
-        <div class="control_panel_wallet">
-          <div>Wallet:</div>
-          <div>27</div>
-        </div>
-        <input class="bid_input_button" type="button" onclick="placeBid(this.parentElement);" value="Bid">
-      </div>
-      <div class="player_control" id="Player_2_control_panel">
-        <div class="player_name">Player 2</div>
-        <div class="control_panel_wallet">
-          <div>Wallet:</div>
-          <div>19</div>
-        </div>
-        <input class="bid_input_button" type="button" onclick="placeBid(this.parentElement);" value="Bid">
-      </div>
-      <div class="player_control" id="Player_3_control_panel">
-        <div class="player_name">Player 3</div>
-        <div class="control_panel_wallet">
-          <div>Wallet:</div>
-          <div>48</div>
-        </div>
-        <input class="bid_input_button" type="button" onclick="placeBid(this.parentElement);" value="Bid">
-      </div>
+    <div class="control_panel" id="master_player_control_panel">
+      <!-- For example
+        <div class="player_control" id="Player_1_control_panel">
+          <div class="player_name">Player 1</div>
+          <div class="control_panel_wallet">
+            <div>Wallet:</div>
+            <div>27</div>
+          </div>
+          <input class-"bid_input_button" type="button" onclick="placeBid(this.parentElement); value="Bid">
+        </div> -->
+      
     </div>
 
     <div class="new_player_form">

@@ -2,7 +2,6 @@
 
 // Singleton, master list of players and their relevant data. Calling these the player data object. For now, they remain in the order they are added.
 var playersArray = [];
-
 var profit = 0;
 
 // Player object. Assumed single game simplifies this structure, and no need to specify bid on creation.
@@ -13,83 +12,30 @@ function Player(n, w) {
     }
 
 // Populating with test data.
-playersArray.push(new Player('Player 1', 27));
-playersArray.push(new Player('Player 2', 19));
-playersArray.push(new Player('Player 3', 48));
-playersArray[0].bid = 3;
-playersArray[1].bid = 1;
-playersArray[2].bid = 2;
-// playersArray.forEach(function(x) {
-//     console.log(x.name, x.wallet, x.bid);
-// });
+playersArray.push(new Player('Player 1', 30));
+playersArray.push(new Player('Player 2', 20));
+playersArray.push(new Player('Player 3', 50));
+playersArray.push(new Player('Bozo', 10));
+
+// window.onload can only happen once when implemented this way.
+window.onload = function() {
+    playersArray.forEach(function(x) {
+        makePlayerControlPanel(x.name, x.wallet);
+        });
+    }
 
 function addPlayer(form) {
-    // Needs to check if player by the same name already exists.
 
-    // Form variables, name and total amount of cash.
-    var playerName;
-    var walletAmount;
+    // Get the form entered information
+    var playerName = form.elements["player_name"].value;
+    var walletAmount = form.elements["player_wallet"].value;
 
-    // Player object to add to the global object, playersArray
-    var p;
-
-    // For grabbing the master control panel that houses all the user control
-    // panels
-    var cp;
-
-    // Various containers for user control panel to be created
-    var outerNode;
-    var nodeName;
-    var nodeWallet;
-
-    // Wallet info, label and actual amount. This might be better as a single
-    // string
-    var walletLabel;
-    var w;
-
-    // Bid button that will be specific to the user
-    var bidButton;
-
-    // Get the form entered information, then create the player object, and add to the global, playersArray.
-    playerName = form.elements["player_name"].value;
-    walletAmount = form.elements["player_wallet"].value;
-    p = new Player(playerName, parseInt(walletAmount));
+    // Create player object, and add it to singleton data structure.
+    var p = new Player(playerName, parseInt(walletAmount));
     playersArray.push(p);
-    console.log("Player object created:", p.name, p.wallet);
 
-    // Create and add new player control panel
-    cp = document.getElementById('control_panel');
-    outerNode = document.createElement('div');
-    outerNode.className = "player_control";
-    // Will need to validate out anything that cannot be an attribute value.
-    outerNode.id = playerName.replace(/ /g, '_') + '_control_panel';
-
-    nodeName = document.createElement('div');
-    nodeName.className = "player_name";
-    nodeName.textContent = playerName;
-
-    nodeWallet = document.createElement('div');
-    nodeWallet.className = "control_panel_wallet";
-
-    walletLabel = document.createElement('div');
-    walletLabel.textContent = "Wallet:";
-    w = document.createElement('div');
-    w.textContent = walletAmount;
-
-    nodeWallet.appendChild(walletLabel);
-    nodeWallet.appendChild(w);
-
-    bidButton = document.createElement('input');
-    bidButton.className = "bid_input_button";
-    bidButton.type = "button";
-    bidButton.value = "Bid";
-    bidButton.setAttribute("onclick", "placeBid(this.parentElement)");
-
-    outerNode.appendChild(nodeName);
-    outerNode.appendChild(nodeWallet);
-    outerNode.appendChild(bidButton);
-    cp.appendChild(outerNode);
-    console.log("Player control panel created:", outerNode);
+    // Make the control panel
+    makePlayerControlPanel(p.name, p.wallet);
     }
 
 function placeBid(playerControl) {
@@ -115,7 +61,7 @@ function placeBid(playerControl) {
         var outerNode, nodeName, nodeBid;        
         outerNode = document.createElement('div');
         outerNode.className = "player_row";
-        outerNode.id = name.replace(/ /g, '_') + 'queue';
+        outerNode.id = name.replace(/ /g, '_') + '_queue';
         nodeName = document.createElement('div');
         nodeName.textContent = name;
         nodeBid = document.createElement('div');
@@ -130,22 +76,19 @@ function placeBid(playerControl) {
     else {
         player.bid = player.bid + 1;
 
-        var playerSortElement = getPlayerRowFromQueue(q, name);
-//        console.log("getPlayerRowFromQueue result:", playerSortElement);
+//        var playerSortElement = getPlayerRowFromQueue(q, name);
+        var playerSortElement = document.getElementById(name.replace(/ /g, '_') + '_queue');
+
         playerSortElement.firstElementChild.nextElementSibling.textContent = player.bid;
         // Finally, sort queue. Assume the top player is not bidding.
         // Get all the relevant additional data.
         var previousPlayer = playerSortElement.previousElementSibling;
-        // console.log("Previous player");
-        // console.log(previousPlayer);
+
         let previousBid = parseInt(previousPlayer.firstElementChild.nextElementSibling.textContent);
         let playerBid = parseInt(playerSortElement.firstElementChild.nextElementSibling.textContent);
         var sortingQueue = [];
-        // console.log("Sort numbers. Previous bid:", previousBid, "Player bid:", playerBid);
-
         if (previousBid < playerBid) {
-            // console.log("Exceeded bid. Time to move up the queue.");
-            // So pull out the exceeded bid and put it in the queue.
+            // Pull out the exceeded bid and put it in the queue.
             sortingQueue.push(previousPlayer);
             // And do the same for all the rest of the bids after.
             while (playerSortElement.nextElementSibling != null) {
@@ -158,24 +101,20 @@ function placeBid(playerControl) {
                 }
             }
         }
-    // logPlayersArray();
     }
        
 function declareWinner(form) {
     var playerSelected = form.elements["versus"].value;
     
     if (playerSelected == "") {
-//        console.log("Empty player selected in win declare.");
         document.getElementById("winner_error").textContent = "Error!";
         }
     else {
         document.getElementById("winner_error").textContent = "";
 
-        // Have to add loss of bid to loser and removal from queue as well as updating their bid value in their global object. Also have to update the wallet amounts in player control.
         let playersRadioArray = form.elements["versus"];
         let champObject = findPlayer(playersRadioArray[0].value);
         let challengerObject = findPlayer(playersRadioArray[1].value);
-        console.log(champObject, challengerObject);
 
         var bountyElement = document.getElementById("bounty_amount_element");
         let bounty = parseInt(bountyElement.textContent);
@@ -184,7 +123,6 @@ function declareWinner(form) {
         var queue = document.getElementById('queue');
         var playerWonQueueElement, playerLostQueueElement;
         if (playersRadioArray[0].checked) {
-            console.log("Champ branch selected");
             bid = challengerObject.bid;
             newWallet = champObject.wallet + bid * (1/4);
             newBounty = bounty + bid * (1/4);
@@ -196,10 +134,9 @@ function declareWinner(form) {
             profit = newProfit;
             winnerControlPanel = document.getElementById(champObject.name.replace(/ /g, '_') + '_control_panel');
             playerWonQueueElement = document.getElementById(champObject.name.replace(/ /g, '_') + '_queue');
-            playerLostQueueElement = getPlayerRowFromQueue(queue, challengerObject.name);
+            playerLostQueueElement = document.getElementById(challengerObject.name.replace(/ /g, '_') + '_queue');
             }
         else {
-            console.log("Challenger selected");
             bid = champObject.bid;
             newWallet = challengerObject.wallet + bounty + bid * (1/4);
             newBounty = bid * (1/4);
@@ -211,18 +148,15 @@ function declareWinner(form) {
             profit = newProfit;
             winnerControlPanel = document.getElementById(challengerObject.name.replace(/ /g, '_') + '_control_panel');
             playerWonQueueElement = document.getElementById(challengerObject.name.replace(/ /g, '_') + 'queue');
-            playerLostQueueElement = getPlayerRowFromQueue(queue, champObject.name);
+            playerLostQueueElement = document.getElementById(champObject.name.replace(/ /g, '_') + '_queue');
             }
-        console.log(winnerControlPanel);
         var walletElement = winnerControlPanel.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling;
         walletElement.textContent = newWallet;
-        console.log("Player queue element:", playerLostQueueElement);
         queue.removeChild(playerLostQueueElement);
-        console.log("Final player objects:", champObject, challengerObject);
 
+        // And finally create new game in panel.
         let champRowName = queue.firstElementChild.nextElementSibling.firstElementChild.textContent;
         let challengerRowName = queue.firstElementChild.nextElementSibling.nextElementSibling.firstElementChild.textContent;
-        console.log(champRowName, challengerRowName);
         var champInput = document.getElementById("champ_radio_input");
         var challengerInput = document.getElementById("challenger_radio_input");
         champInput.nextElementSibling.textContent = champRowName;
@@ -240,13 +174,56 @@ function findPlayer(name) {
     return player;
     }
 function logPlayersArray() {
-    console.log("Players array:");
     for (var i = 0; i < playersArray.length; i++) {
         var p = playersArray[i];
-        console.log(p.name, p.wallet, p.bid);
         }
     }
-// May not need to include queue. Depends on if the dom interface is by reference or by value.
+function makePlayerControlPanel(name, wallet) {
+    // Various containers for user control panel to be created
+    var outerNode, nodeName, nodeWallet;
+
+    // Wallet info, label and actual amount. This might be better as a single string
+    var walletLabel, w;
+
+    // Bid button that will be specific to the user
+    var bidButton;
+
+    // Create and add new player control panel
+    var cp = document.getElementById('master_player_control_panel');
+
+    outerNode = document.createElement('div');
+    outerNode.className = "player_control";
+    // Will need to validate out anything that cannot be an attribute value.
+    outerNode.id = name.replace(/ /g, '_') + '_control_panel';
+
+    nodeName = document.createElement('div');
+    nodeName.className = "player_name";
+    nodeName.textContent = name;
+
+    nodeWallet = document.createElement('div');
+    nodeWallet.className = "control_panel_wallet";
+
+    walletLabel = document.createElement('div');
+    walletLabel.textContent = "Wallet:";
+    w = document.createElement('div');
+    w.textContent = wallet;
+
+    nodeWallet.appendChild(walletLabel);
+    nodeWallet.appendChild(w);
+
+    bidButton = document.createElement('input');
+    bidButton.className = "bid_input_button";
+    bidButton.type = "button";
+    bidButton.value = "Bid";
+    bidButton.setAttribute("onclick", "placeBid(this.parentElement)");
+
+    outerNode.appendChild(nodeName);
+    outerNode.appendChild(nodeWallet);
+    outerNode.appendChild(bidButton);
+
+    cp.append(outerNode);
+    }
+// Manual sort. Unused. Every row in queue is ID'd now.
 function getPlayerRowFromQueue(queue, name) {
     // First element is the title row, and needs to be skipped.
     var playerSearchElement = queue.firstElementChild;
