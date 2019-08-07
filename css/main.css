@@ -1,12 +1,18 @@
-.game_cp_and_queue {
+.control_panels_and_queue {
     display: flex;
     align-items: center;
     }
+.control_panels {
+    flex: 0 1 33%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    }
 .game_control_panel {
-    border: 1px dashed;
-    flex: 1;
+/*    border: 1px dashed; */
+    background-color: #F4F4F4;
+    width: 200px;
     padding: 10px;
-    margin-right: 10px;
     }
 .bounty_control {
     display: grid;
@@ -24,16 +30,33 @@
     height: 100px;
     padding: 20px;
     }
-.declare_winner_button {
+.declare_winner_button, .start_event_button {
     margin-top: 20px;
     background-color:lightskyblue;
     }
+.all_queues {
+    flex: 0 1 66%;
+    }
 .queue {
     border: 2px solid;
-    flex: 4;
+    width: 605px;
     }
 .queue div {
+/*    height: 25px; */
+    }
+.queue_spacer {
     height: 25px;
+    }
+.chart_labels {
+    background-color: #F4F4F4;
+    }
+.champ_queue {
+    width: 600px;
+    background-color: #FFE7E7;
+    }
+ .challenger_queue {
+    width: 600px;
+    background-color: #CBEAF9;
     }
 .new_player_form {
     display: flex;
@@ -49,19 +72,14 @@
     display: grid;
     grid-template-columns: 1fr 3fr;
     }
-.chart_labels, .player_row {
+.chart_labels, .player_row, .champ_queue, .challenger_queue {
     display:grid;
     grid-template-columns: 2fr 1fr;
-    border-bottom: 1px dashed;
+
+    padding: 10px 5px 10px 5px;
     }
-.queue > div:first-child {
-    background-color: f2f0d8;
-    }
-.queue > div:last-child {
-    border-bottom: none;
-    }
-.player_row > div:nth-child(2) {
-    background-color: #ffb2aa;
+.player_row:nth-of-type(odd) {
+    background-color: #DBF4D7;
     }
 .bid {
     width: 10em;
@@ -78,7 +96,6 @@ div.player_control {
     text-align: center;
     border: 1px dotted black;
     align-items: center;
-    /*  justify-content: space-around; */
     flex-flow: column;
     }
 .player_name {
