@@ -39,10 +39,6 @@ function startEvent() {
     else {
         error.textContent = "";
         toggleGameControlButton();
-        // var startEventButtonElement = document.getElementById("start_event_button");
-        // startEventButtonElement.hidden = true;
-        // var declareWinnerButtonElement = document.getElementById("declare_winner_button");
-        // declareWinnerButtonElement.hidden = false;
         changeChampAndChallenger();
         }
     }
@@ -57,7 +53,6 @@ function toggleGameControlButton() {
         startEventButtonElement.hidden = false;
         declareWinnerButtonElement.hidden = true;
         }
-    console.log("toggleGameControlButton");
     }
 // Disallowed names - Empty
 function addPlayer(form) {
@@ -72,7 +67,20 @@ function addPlayer(form) {
     // Make the control panel
     makePlayerControlPanel(p.name, p.wallet);
     }
-
+function removeFromQueue(playerControl) {
+//    console.log("Remove from queue button pushed!");
+    let name = playerControl.firstElementChild.textContent;
+    let player = findPlayer(name);
+    let q = document.getElementById('queue');
+    let playerQueueElement = document.getElementById(name.replace(/ /g, '_') + '_queue');
+    let playerBidAmount = parseInt(playerQueueElement.firstElementChild.nextElementSibling.textContent);
+    let playerControlPanel = document.getElementById(name.replace(/ /g, '_') + '_control_panel');
+    let controlPanelWallet = playerControlPanel.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling;
+    player.wallet = player.wallet + playerBidAmount;
+    player.bid = 0;
+    controlPanelWallet.textContent = player.wallet;
+    q.removeChild(playerQueueElement);
+    }
 function placeBid(playerControl) {
     // Pull the name from the control, then pull the data object from playersArray.
     var name = playerControl.firstElementChild.textContent;
@@ -115,24 +123,46 @@ function placeBid(playerControl) {
         playerSortElement.firstElementChild.nextElementSibling.textContent = player.bid;
         // Finally, sort queue. Assume the top player is not bidding.
         // Get all the relevant additional data.
-        var previousPlayer = playerSortElement.previousElementSibling;
 
-        let previousBid = parseInt(previousPlayer.firstElementChild.nextElementSibling.textContent);
-        let playerBid = parseInt(playerSortElement.firstElementChild.nextElementSibling.textContent);
-        var sortingQueue = [];
-        if (previousBid < playerBid) {
-            // Pull out the exceeded bid and put it in the queue.
-            sortingQueue.push(previousPlayer);
-            // And do the same for all the rest of the bids after.
-            while (playerSortElement.nextElementSibling != null) {
-                sortingQueue.push(playerSortElement.nextElementSibling);
-                q.removeChild(playerSortElement.nextElementSibling);
+        var pivotPlayer = playerSortElement.previousElementSibling;
+        var pivotPlayerBid = parseInt(pivotPlayer.firstElementChild.nextElementSibling.textContent);
+        if (pivotPlayerBid < player.bid) {
+            var previousPivotBid = parseInt(pivotPlayer.previousElementSibling.firstElementChild.nextElementSibling.textContent);
+            while (pivotPlayerBid == previousPivotBid) {
+                pivotPlayer = pivotPlayer.previousElementSibling;
+                previousPivotBid = parseInt(pivotPlayer.previousElementSibling.firstElementChild.nextElementSibling.textContent);
                 }
-            // Then add the whole sorting queue back into the bid queue.
+//            console.log(pivotPlayer.firstElementChild.textContent);
+            var sortingQueue = [];
+            sortingQueue.push(playerSortElement);
+            sortingQueue.push(pivotPlayer);
+            q.removeChild(playerSortElement);
+            while (pivotPlayer.nextElementSibling != null) {
+                sortingQueue.push(pivotPlayer.nextElementSibling);
+                q.removeChild(pivotPlayer.nextElementSibling);
+                }
             for (var i = 0; i < sortingQueue.length; i++) {
                 q.appendChild(sortingQueue[i]);
                 }
             }
+        // var previousPlayer = playerSortElement.previousElementSibling;
+
+        // let previousBid = parseInt(previousPlayer.firstElementChild.nextElementSibling.textContent);
+        // let playerBid = parseInt(playerSortElement.firstElementChild.nextElementSibling.textContent);
+        // var sortingQueue = [];
+        // if (previousBid < playerBid) {
+        //     // Pull out the exceeded bid and put it in the queue.
+        //     sortingQueue.push(previousPlayer);
+        //     // And do the same for all the rest of the bids after.
+        //     while (playerSortElement.nextElementSibling != null) {
+        //         sortingQueue.push(playerSortElement.nextElementSibling);
+        //         q.removeChild(playerSortElement.nextElementSibling);
+        //         }
+        //     // Then add the whole sorting queue back into the bid queue.
+        //     for (var i = 0; i < sortingQueue.length; i++) {
+        //         q.appendChild(sortingQueue[i]);
+        //         }
+        //     }
         }
     }
        
@@ -151,44 +181,47 @@ function declareWinner(form) {
         let challengerObject = findPlayer(playersRadioArray[1].value);
 
         // Variables for money tracking and contestants.
+        // Amounts do not format correctly for all bid dispertion.
         var bountyElement = document.getElementById("bounty_amount_element");
-        let bounty = parseInt(bountyElement.textContent);
+        let bounty = parseFloat(bountyElement.textContent);
+//        console.log('Bounty:', bounty);
         var winnerControlPanel;
         var bid, newWallet, newBounty, newProfit;
         var queue = document.getElementById('queue');
         var playerLostQueueElement;
         if (playersRadioArray[0].checked) {
             // Determine where contested bid is distributed.
+//            console.log('Champ won');
             bid = challengerObject.bid;
             newWallet = champObject.wallet + bid * (1/4);
             newBounty = bounty + bid * (1/4);
             newProfit = profit + bid * (1/2);
 
+//            console.log('Champ wallet:', newWallet, 'New bounty:', newBounty, 'New profit:', newProfit);
             // Assign parts of bid
             challengerObject.bid = 0;
             champObject.wallet = newWallet;
             bountyElement.textContent = newBounty;
             profit = newProfit;
             winnerControlPanel = document.getElementById(champObject.name.replace(/ /g, '_') + '_control_panel');
-//            playerWonQueueElement = document.getElementById("champ_queue");
             playerLostQueueElement = document.getElementById("challenger_queue");
-//            playerWonQueueElement = document.getElementById(champObject.name.replace(/ /g, '_') + '_queue');
-//            playerLostQueueElement = document.getElementById(challengerObject.name.replace(/ /g, '_') + '_queue');
+            document.getElementById("challenger_radio_input").nextElementSibling.textContent = "Empty";
             }
         else {
+//            console.log('Challenger won');
             bid = champObject.bid;
             newWallet = challengerObject.wallet + bounty + bid * (1/4);
             newBounty = bid * (1/4);
             newProfit = profit + bid * (1/2);
 
+//            console.log('Challenger wallet:', newWallet, 'New bounty:', newBounty, 'New profit:', newProfit);
             champObject.bid = 0;
             challengerObject.wallet = newWallet;
             bountyElement.textContent = newBounty;
             profit = newProfit;
             winnerControlPanel = document.getElementById(challengerObject.name.replace(/ /g, '_') + '_control_panel');
-//            playerWonQueueElement = document.getElementById(challengerObject.name.replace(/ /g, '_') + 'queue');
-//            playerLostQueueElement = document.getElementById(champObject.name.replace(/ /g, '_') + '_queue');
             playerLostQueueElement = document.getElementById("champ_queue");
+            document.getElementById("champ_radio_input").nextElementSibling.textContent = "Empty";
             }
         var walletElement = winnerControlPanel.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling;
         walletElement.textContent = newWallet;
@@ -227,8 +260,8 @@ function makePlayerControlPanel(name, wallet) {
     // Wallet info, label and actual amount. This might be better as a single string
     var walletLabel, w;
 
-    // Bid button that will be specific to the user
-    var bidButton;
+    // Player actions
+    var bidButton, removeFromQueueButton;
 
     // Create and add new player control panel
     var cp = document.getElementById('master_player_control_panel');
@@ -259,9 +292,16 @@ function makePlayerControlPanel(name, wallet) {
     bidButton.value = "Bid";
     bidButton.setAttribute("onclick", "placeBid(this.parentElement)");
 
+    removeFromQueueButton = document.createElement('input');
+    removeFromQueueButton.className = "remove_from_queue_button";
+    removeFromQueueButton.type = "button";
+    removeFromQueueButton.value = "Exit Queue";
+    removeFromQueueButton.setAttribute("onclick", "removeFromQueue(this.parentElement)");
+    
     outerNode.appendChild(nodeName);
     outerNode.appendChild(nodeWallet);
     outerNode.appendChild(bidButton);
+    outerNode.appendChild(removeFromQueueButton);
 
     cp.append(outerNode);
     }
@@ -296,13 +336,11 @@ function changeChampAndChallenger() {
     var errorElement = document.getElementById("winner_error");
     // If queue is empty.
     if (queue.childElementCount == 1) {
-        console.log("Queue is empty.");
         errorElement.textContent = "Queue is empty!";
         }
     // If both champ and challenger are empty.
     else if (champRowName == "Empty" && challengerRowName == "Empty") {
         errorElement.textContent = "";
-        console.log("Both players are empty");
         
         champQueue.firstElementChild.textContent = nextPlayerName;
         champQueue.firstElementChild.nextElementSibling.textContent = nextPlayerBid;
@@ -320,11 +358,8 @@ function changeChampAndChallenger() {
         champInput.value = nextPlayerName;
         challengerInput.value = secondPlayerName;
         }
-    // If champ is empty.
-    // TODO put in more clear code lines, and shouldnt be a need for recalced, etc
     else if (champRowName == "Empty") {
         errorElement.textContent = "";
-        console.log("Champ changes");
         champQueue.firstElementChild.textContent = challengerRowName;
         let oldChallengerBid = challengerQueue.firstElementChild.nextElementSibling.textContent;
         champQueue.firstElementChild.nextElementSibling.textContent = oldChallengerBid;
@@ -339,7 +374,6 @@ function changeChampAndChallenger() {
         champInput.value = challengerRowName;
         challengerInput.value = nextPlayerName;
         }
-    // If challenger is empty {
     else if (challengerRowName == "Empty") {
         errorElement.textContent = "";
         challengerQueue.firstElementChild.textContent = nextPlayerName;

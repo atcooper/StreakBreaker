@@ -112,11 +112,11 @@ div.player_control {
     width: 5em;
     background-color: red;
     }
-.bid_input_button {
+.bid_input_button, .remove_from_queue_button {
     text-align: center;
     width: 10em;
     background-color: lightgray;
-    margin: 0 0 20px 0;
+/*    margin: 0 0 20px 0; */
     }
 .add_player_button {
     margin-top: 20px;
