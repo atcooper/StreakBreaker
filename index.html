@@ -15,11 +15,12 @@
           </div>
           <form id="declare_winner_form" autocomplete="off">
             <div class="versus_control">
-              <span><input id="champ_radio_input" type="radio" name="versus" value="Player 1"><label>Champ</label></span>
-              <div>vs</div>
-              <span><input id="challenger_radio_input" type="radio" name="versus" value="Player 3"><label>Challenger</label></span>
-              <input id="start_event_button" class="start_event_button" type="button" value="Start Event" onclick="startEvent();">
-              <input id="declare_winner_button" class="declare_winner_button" type="button" form="declare_winner_form" value="Declare Winner" onclick="declareWinner(this.form);" hidden=true>
+              <input id="champ_radio_input" class="versus_input" type="radio" name="versus" value="Player 1"><label id="champ_label" class="versus_label">Champ</label>
+              <div id="vs_center">vs</div>
+              <input id="challenger_radio_input" class="versus_input" type="radio" name="versus" value="Player 3"><label id="challenger_label" class="versus_label">Challenger</label>
+              <input id="start_event_button" type="button" value="Start Event" onclick="startEvent();">
+
+              <input id="declare_winner_button" type="button" form="declare_winner_form" value="Declare Winner" onclick="declareWinner(this.form);" hidden=true>
             </div>
           </form>
           <div class="error" id="winner_error"></div>
@@ -58,7 +59,8 @@
             <div>Wallet:</div>
             <div>27</div>
           </div>
-          <input class-"bid_input_button" type="button" onclick="placeBid(this.parentElement); value="Bid">
+          <input class="bid_input_button" type="button" onclick="placeBid(this.parentElement);" value="Bid">
+                                                                                                              <input class="remove_from_queue_button" type="button" onclick="removeFromQueue(this.parentElement);" value="Exit Queue">
         </div> -->
       
     </div>

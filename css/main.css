@@ -13,6 +13,7 @@
     background-color: #F4F4F4;
     width: 200px;
     padding: 10px;
+    margin-top: 10px;
     }
 .bounty_control {
     display: grid;
@@ -23,16 +24,33 @@
     justify-self: center;
     }
 .versus_control {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    height: 100px;
-    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0,1fr));
+    grid-gap: 5px;
+    margin-top: 10px;
     }
-.declare_winner_button, .start_event_button {
-    margin-top: 20px;
+.versus_input {
+    grid-column: 1 / 2;
+    }
+.versus_label {
+    grid-column: 2 / 6;
+    }
+#champ_label {
+    background-color: #FFE7E7;
+    padding: 5px;
+    }
+#challenger_label {
+    background-color: #CBEAF9;
+    padding: 5px;
+    }
+#vs_center {
+    grid-column: 2 / 6;
+    }
+#declare_winner_button, #start_event_button {
+    margin-top: 10px;
     background-color:lightskyblue;
+    grid-column: 2 / 5;
+    grid-row: 4;
     }
 .all_queues {
     flex: 0 1 66%;
@@ -40,9 +58,6 @@
 .queue {
     border: 2px solid;
     width: 605px;
-    }
-.queue div {
-/*    height: 25px; */
     }
 .queue_spacer {
     height: 25px;

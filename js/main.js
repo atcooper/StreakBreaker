@@ -23,14 +23,30 @@ window.onload = function() {
         makePlayerControlPanel(x.name, x.wallet);
         });
     }
-// TODO needs to be able to handle situation where only one player needs filling in champ/challenger 
+
+/* Get elements from page functions. */
+
+function getPlayerFromQueue(name) {
+    let element = document.getElementById(name.replace(/ /g, '_') + '_queue');
+    return element;
+    }
+function getPlayerControlPanel(name) {
+    let element = document.getElementById(name.replace(/ /g, '_') + '_control_panel');
+    return element;
+    }
+function getPlayerControlButtons(name) {
+    var controlPanel = getPlayerControlPanel(name);
+    var bidButton = controlPanel.firstElementChild.nextElementSibling.nextElementSibling;
+    var exitButton = controlPanel.firstElementChild.nextElementSibling.nextElementSibling.nextElementSibling;
+    return [bidButton, exitButton];
+    }
 function startEvent() {
     // if less than 2 players
     let queue = document.getElementById("queue");
     let error = document.getElementById("winner_error");
     let champName = document.getElementById("champ_queue").firstElementChild.textContent;
     let challengerName = document.getElementById("challenger_queue").firstElementChild.textContent;
-//    if (queue.childElementCount < 3) {
+
     if ((champName == "Empty" && challengerName == "Empty" && queue.childElementCount < 3) ||
         (champName == "Empty" && queue.childElementCount == 1) ||
         (challengerName == "Empty" && queue.childElementCount == 1)) {
@@ -72,9 +88,11 @@ function removeFromQueue(playerControl) {
     let name = playerControl.firstElementChild.textContent;
     let player = findPlayer(name);
     let q = document.getElementById('queue');
-    let playerQueueElement = document.getElementById(name.replace(/ /g, '_') + '_queue');
+    let playerQueueElement = getPlayerFromQueue(name);
+//        document.getElementById(name.replace(/ /g, '_') + '_queue');
     let playerBidAmount = parseInt(playerQueueElement.firstElementChild.nextElementSibling.textContent);
-    let playerControlPanel = document.getElementById(name.replace(/ /g, '_') + '_control_panel');
+    let playerControlPanel = getPlayerControlPanel(name);
+//    let playerControlPanel = document.getElementById(name.replace(/ /g, '_') + '_control_panel');
     let controlPanelWallet = playerControlPanel.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling;
     player.wallet = player.wallet + playerBidAmount;
     player.bid = 0;
@@ -132,7 +150,7 @@ function placeBid(playerControl) {
                 pivotPlayer = pivotPlayer.previousElementSibling;
                 previousPivotBid = parseInt(pivotPlayer.previousElementSibling.firstElementChild.nextElementSibling.textContent);
                 }
-//            console.log(pivotPlayer.firstElementChild.textContent);
+
             var sortingQueue = [];
             sortingQueue.push(playerSortElement);
             sortingQueue.push(pivotPlayer);
@@ -145,24 +163,6 @@ function placeBid(playerControl) {
                 q.appendChild(sortingQueue[i]);
                 }
             }
-        // var previousPlayer = playerSortElement.previousElementSibling;
-
-        // let previousBid = parseInt(previousPlayer.firstElementChild.nextElementSibling.textContent);
-        // let playerBid = parseInt(playerSortElement.firstElementChild.nextElementSibling.textContent);
-        // var sortingQueue = [];
-        // if (previousBid < playerBid) {
-        //     // Pull out the exceeded bid and put it in the queue.
-        //     sortingQueue.push(previousPlayer);
-        //     // And do the same for all the rest of the bids after.
-        //     while (playerSortElement.nextElementSibling != null) {
-        //         sortingQueue.push(playerSortElement.nextElementSibling);
-        //         q.removeChild(playerSortElement.nextElementSibling);
-        //         }
-        //     // Then add the whole sorting queue back into the bid queue.
-        //     for (var i = 0; i < sortingQueue.length; i++) {
-        //         q.appendChild(sortingQueue[i]);
-        //         }
-        //     }
         }
     }
        
@@ -203,15 +203,16 @@ function declareWinner(form) {
             champObject.wallet = newWallet;
             bountyElement.textContent = newBounty;
             profit = newProfit;
-            winnerControlPanel = document.getElementById(champObject.name.replace(/ /g, '_') + '_control_panel');
+            winnerControlPanel = getPlayerControlPanel(champObject.name);
             playerLostQueueElement = document.getElementById("challenger_queue");
             document.getElementById("challenger_radio_input").nextElementSibling.textContent = "Empty";
             }
         else {
-//            console.log('Challenger won');
+            console.log('Challenger won');
             bid = champObject.bid;
             newWallet = challengerObject.wallet + bounty + bid * (1/4);
             newBounty = bid * (1/4);
+            console.log("New bounty:", newBounty);
             newProfit = profit + bid * (1/2);
 
 //            console.log('Challenger wallet:', newWallet, 'New bounty:', newBounty, 'New profit:', newProfit);
@@ -219,14 +220,20 @@ function declareWinner(form) {
             challengerObject.wallet = newWallet;
             bountyElement.textContent = newBounty;
             profit = newProfit;
-            winnerControlPanel = document.getElementById(challengerObject.name.replace(/ /g, '_') + '_control_panel');
+            winnerControlPanel = getPlayerControlPanel(challengerObject.name);
             playerLostQueueElement = document.getElementById("champ_queue");
             document.getElementById("champ_radio_input").nextElementSibling.textContent = "Empty";
             }
         var walletElement = winnerControlPanel.firstElementChild.nextElementSibling.firstElementChild.nextElementSibling;
         walletElement.textContent = newWallet;
 
-        // Remove relevant player data from losers queue.
+        // Disable playing players controls. Remove relevant player data from losers queue. 
+
+        var playerLostControlButtons = getPlayerControlButtons(playerLostQueueElement.firstElementChild.textContent);
+        playerLostControlButtons[0].disabled = false;
+        playerLostControlButtons[1].disabled = false;
+        playerLostControlButtons[0].parentElement.style.backgroundColor = null;
+
         playerLostQueueElement.firstElementChild.textContent = "Empty";
         playerLostQueueElement.firstElementChild.nextElementSibling.textContent = "0";
 
@@ -341,7 +348,7 @@ function changeChampAndChallenger() {
     // If both champ and challenger are empty.
     else if (champRowName == "Empty" && challengerRowName == "Empty") {
         errorElement.textContent = "";
-        
+
         champQueue.firstElementChild.textContent = nextPlayerName;
         champQueue.firstElementChild.nextElementSibling.textContent = nextPlayerBid;
 
@@ -357,6 +364,19 @@ function changeChampAndChallenger() {
         challengerInput.nextElementSibling.textContent = secondPlayerName;
         champInput.value = nextPlayerName;
         challengerInput.value = secondPlayerName;
+
+        var champPlayerButtons = getPlayerControlButtons(nextPlayerName);
+        champPlayerButtons[0].disabled = true;
+        champPlayerButtons[1].disabled = true;
+        champPlayerButtons[0].parentElement.style.backgroundColor = "#FFE7E7";
+        var challengerPlayerButtons = getPlayerControlButtons(secondPlayerName);
+        challengerPlayerButtons[0].disabled = true;
+        challengerPlayerButtons[1].disabled = true;
+        challengerPlayerButtons[0].parentElement.style.backgroundColor = "#CBEAF9";
+
+        var champObject = findPlayer(nextPlayerName);
+        var bounty = document.getElementById("bounty_amount_element");
+        bounty.textContent = 1/4 * champObject.bid;
         }
     else if (champRowName == "Empty") {
         errorElement.textContent = "";
@@ -373,6 +393,13 @@ function changeChampAndChallenger() {
         challengerInput.nextElementSibling.textContent = nextPlayerName;
         champInput.value = challengerRowName;
         challengerInput.value = nextPlayerName;
+
+        var challengerPlayerButtons = getPlayerControlButtons(nextPlayerName);
+        challengerPlayerButtons[0].disabled = true;
+        challengerPlayerButtons[1].disabled = true;
+        challengerPlayerButtons[0].parentElement.style.backgroundColor = "#CBEAF9";
+        var champControlPanel = getPlayerControlPanel(challengerRowName);
+        champControlPanel.style.backgroundColor = "#FFE7E7";
         }
     else if (challengerRowName == "Empty") {
         errorElement.textContent = "";
@@ -382,9 +409,14 @@ function changeChampAndChallenger() {
 
         challengerInput.nextElementSibling.textContent = nextPlayerName;
         challengerInput.value = nextPlayerName;
-          }
+        
+        var champPlayerButtons = getPlayerControlButtons(nextPlayerName);
+        champPlayerButtons[0].disabled = true;
+        champPlayerButtons[1].disabled = true;
+        champPlayerButtons[0].parentElement.style.backgroundColor = "#CBEAF9";
+        }
     else {
-        errorElement.textContent = "Unspecified error in changeChampandChallenger";
+        errorElement.textContent = "Unspecified error in changeChampAndChallenger";
         }
     
     }
